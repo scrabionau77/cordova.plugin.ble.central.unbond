@@ -14,6 +14,7 @@
 
 package com.megster.cordova.ble.central;
 
+import java.lang.reflect.Method; // added by Daniele Pellerucci for unbond method
 import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
