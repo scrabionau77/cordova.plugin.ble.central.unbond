@@ -57,6 +57,7 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
     private static final String CONNECT = "connect";
     private static final String AUTOCONNECT = "autoConnect";
     private static final String DISCONNECT = "disconnect";
+    private static final String UNBOND = "unbond";
 
     private static final String QUEUE_CLEANUP = "queueCleanup";
     private static final String SET_PIN = "setPin";
@@ -186,6 +187,11 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
 
             String macAddress = args.getString(0);
             disconnect(callbackContext, macAddress);
+
+        } else if (action.equals(UNBOND)) {
+
+            String macAddress = args.getString(0);
+            unbond(callbackContext, macAddress);
 
         } else if (action.equals(QUEUE_CLEANUP)) {
 
@@ -466,6 +472,27 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
         }
 
     }
+
+    
+    public void unbond(CallbackContext callbackContext, String macAddress){
+        if (!peripherals.containsKey(macAddress) && BLECentralPlugin.this.bluetoothAdapter.checkBluetoothAddress(macAddress)) {
+            callbackContext.error("Peripheral " + macAddress + " not already bonded.");
+            return;
+        }
+        Peripheral peripheral = peripherals.get(macAddress);
+        if (peripheral != null) {
+            try{
+                Method m = peripheral.getClass().getMethod("removeBond", (Class[]) null);
+                m.invoke(peripheral, (Object[]) null);
+                callbackContext.success();
+            } catch (Exception e){
+                callbackContext.error("Not unbonded");
+            }
+        } else {
+            callbackContext.error("Peripheral " + macAddress + " not found.");
+        }
+    }
+
 
     private void queueCleanup(CallbackContext callbackContext, String macAddress) {
         Peripheral peripheral = peripherals.get(macAddress);

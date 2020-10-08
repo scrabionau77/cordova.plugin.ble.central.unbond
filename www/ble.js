@@ -146,6 +146,16 @@ module.exports = {
         cordova.exec(success, failure, 'BLE', 'disconnect', [device_id]);
     },
 
+    // Android only
+    unbond: function (device_id, success, failure) {
+        try {
+            delete autoconnected[device_id];
+        } catch(e) {
+            // ignore error
+        }
+        cordova.exec(success, failure, 'BLE', 'unbond', [device_id]);
+    },
+
     queueCleanup: function (device_id,  success, failure) {
         cordova.exec(success, failure, 'BLE', 'queueCleanup', [device_id]);
     },
