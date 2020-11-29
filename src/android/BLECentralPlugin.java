@@ -105,10 +105,9 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
     boolean reportDuplicates = false;
 
     // Android 23 requires new permissions for BluetoothLeScanner.startScan()
-    private static final String ACCESS_COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
-    private static final String ACCESS_FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    //private static final String ACCESS_BACKGROUND_LOCATION = Manifest.permission.ACCESS_BACKGROUND_LOCATION;
-    private static final int REQUEST_ACCESS_COARSE_LOCATION = 2;
+    //private static final String ACCESS_COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
+    //private static final String ACCESS_FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
+    private static final int REQUEST_ACCESS_LOCATION = 2; // private static final int REQUEST_ACCESS_COARSE_LOCATION = 2;
     private CallbackContext permissionCallback;
     private UUID[] serviceUUIDs;
     private int scanSeconds;
