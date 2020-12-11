@@ -475,21 +475,42 @@ public class BLECentralPlugin extends CordovaPlugin implements BluetoothAdapter.
 
     
     public void unbond(CallbackContext callbackContext, String macAddress){
-        if (!peripherals.containsKey(macAddress) && BLECentralPlugin.this.bluetoothAdapter.checkBluetoothAddress(macAddress)) {
+        Set<BluetoothDevice> bondedDevices =  bluetoothAdapter.getBondedDevices();
+        List<BluetoothDevice> ListP = new ArrayList<BluetoothDevice>();
+        for (BluetoothDevice device : bondedDevices) {
+            device.getBondState();
+            int type = device.getType();
+            // just low energy devices (filters out classic and unknown devices)
+            if ((type == DEVICE_TYPE_LE || type == DEVICE_TYPE_DUAL)) {
+                if(device.getAddress().trim().equals(macAddress.trim())){
+                    ListP.add(device);
+                }
+            }
+        }
+        if(ListP.size() == 0){ // no device found
+            LOG.w(TAG, "Empty list");
             callbackContext.error("Peripheral " + macAddress + " not already bonded.");
             return;
         }
-        Peripheral peripheral = peripherals.get(macAddress);
-        if (peripheral != null) {
-            try{
-                Method m = peripheral.getClass().getMethod("removeBond", (Class[]) null);
-                m.invoke(peripheral, (Object[]) null);
+        BluetoothDevice device = ListP.get(0);
+        if (device != null) {
+            boolean result = false;
+            try {
+                java.lang.reflect.Method mi = device.getClass().getMethod("removeBond");
+                Boolean returnValue = (Boolean) mi.invoke(device);
+                result = returnValue.booleanValue();
+            } catch (Exception e) {
+                LOG.e(TAG, "UNBONDING ERROR: " + e.getMessage());
+                callbackContext.error("Not unbonded");
+            }
+            if(result){
                 callbackContext.success();
-            } catch (Exception e){
+            } else {
+                LOG.e(TAG, "UNBONDING ERROR");
                 callbackContext.error("Not unbonded");
             }
         } else {
-            callbackContext.error("Peripheral " + macAddress + " not found.");
+            callbackContext.error("Peripheral " + macAddress + " not already bonded.");
         }
     }
 
